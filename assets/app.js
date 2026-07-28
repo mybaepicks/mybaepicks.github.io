@@ -144,14 +144,25 @@
   document.querySelectorAll(".navitem").forEach(item=>{
     item.addEventListener("mouseenter", ()=>{ if(isMobile()) return; clearTimeout(hideT); body.classList.add("menu-open"); });
     item.addEventListener("mouseleave", ()=>{ if(isMobile()) return; hideT = setTimeout(()=>body.classList.remove("menu-open"), 120); });
-    // mobile: tap top link toggles accordion instead of navigating
+    // mobile: tap gender toggles its accordion (level 1)
     const top = item.querySelector(".navtop");
     top.addEventListener("click", e=>{
       if(!isMobile()) return;
       e.preventDefault();
       const open = item.classList.contains("open");
-      document.querySelectorAll(".navitem").forEach(i=>i.classList.remove("open"));
+      document.querySelectorAll(".navitem").forEach(i=>{ i.classList.remove("open"); i.querySelectorAll(".col.open").forEach(c=>c.classList.remove("open")); });
       item.classList.toggle("open", !open);
+    });
+    // mobile: tap a group heading toggles its category list (level 2)
+    item.querySelectorAll(".mega .col h4").forEach(h4=>{
+      h4.addEventListener("click", e=>{
+        if(!isMobile()) return;
+        e.preventDefault(); e.stopPropagation();
+        const col = h4.parentElement;
+        const wasOpen = col.classList.contains("open");
+        item.querySelectorAll(".col.open").forEach(c=>c.classList.remove("open"));
+        col.classList.toggle("open", !wasOpen);
+      });
     });
   });
   const backdrop = document.querySelector(".megabackdrop");

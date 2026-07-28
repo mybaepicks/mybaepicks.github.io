@@ -484,3 +484,29 @@ footer .madeby{margin-top:8px;font-weight:600;color:var(--ink);font-family:var(-
 
 /* smooth native touch scrolling for rails (esp. the Best Picks auto rail) */
 .rail{-webkit-overflow-scrolling:touch}
+
+/* ============================================================
+   MEGA-MENU UX: desktop = single row + horizontal scroll;
+   mobile = nested accordion (tap gender -> tap group -> items)
+   ============================================================ */
+@media(min-width:821px){
+  .mega-inner{flex-wrap:nowrap;overflow-x:auto;padding-bottom:26px;gap:40px}
+  .mega-inner::-webkit-scrollbar{height:6px}
+  .mega-inner::-webkit-scrollbar-thumb{background:#dcdcdc;border-radius:3px}
+  .mega-inner::-webkit-scrollbar-track{background:transparent}
+  .mega .col{flex:0 0 auto}
+}
+@media(max-width:820px){
+  .mega-inner{flex-direction:column;gap:0;padding:0}
+  .mega .col{gap:0;min-width:0}
+  .mega .col h4{cursor:pointer;display:flex;align-items:center;justify-content:space-between;
+    margin:0;padding:14px 22px;border-top:1px solid var(--line);font-size:12px}
+  .mega .col:first-child h4{border-top:0}
+  .mega .col h4::after{content:"";flex:0 0 auto;width:7px;height:7px;
+    border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);
+    transform:rotate(45deg);transition:transform .2s}
+  .mega .col.open h4::after{transform:rotate(-135deg)}
+  .mega .col a{display:none;padding:10px 30px;font-size:14px}
+  .mega .col.open a{display:block}
+  .navitem.open .mega{max-height:1800px}
+}
