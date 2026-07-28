@@ -77,6 +77,99 @@
   }).catch(()=>{ empty.textContent = "Could not load results."; empty.style.display = "block"; });
 })();
 
+// ---------- circular gallery (Best Picks coverflow) ----------
+(function circularGallery(){
+  const wrap = document.getElementById("circg");
+  if(!wrap) return;
+  const items = [...wrap.querySelectorAll(".circg-item")];
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---- tunable params (match reactbits circular-gallery semantics) ----
+  const BEND = 1;            // curvature strength
+  const BORDER_RADIUS = 0.06;// fraction of item width
+  const SCROLL_SPEED = 3;    // wheel/drag multiplier
+  const SCROLL_EASE = 0.06;  // lerp factor for eased momentum
+
+  // apply border radius as a fraction of item size
+  items.forEach(it=>{
+    const im = it.querySelector(".circg-img");
+    if(im) im.style.borderRadius = (it.offsetWidth * BORDER_RADIUS).toFixed(0) + "px";
+  });
+
+  function render(){
+    const rect = wrap.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    for(const it of items){
+      const r = it.getBoundingClientRect();
+      const ic = r.left + r.width / 2;
+      let n = (ic - cx) / (rect.width / 2);       // -1..1 across half viewport
+      n = Math.max(-1.7, Math.min(1.7, n));
+      if(reduce){
+        it.style.transform = "";
+        it.style.opacity = (1 - Math.min(Math.abs(n) * 0.3, 0.5)).toFixed(2);
+        continue;
+      }
+      const rotY  = -n * 22 * BEND;               // bend toward centre
+      const tz    = -Math.abs(n) * 90 * BEND;     // push sides back
+      const ty    =  Math.abs(n) * 16 * BEND;     // arc dip
+      const scale = 1 - Math.abs(n) * 0.14;       // shrink sides
+      it.style.transform = `translateY(${ty.toFixed(1)}px) translateZ(${tz.toFixed(0)}px) rotateY(${rotY.toFixed(1)}deg) scale(${scale.toFixed(3)})`;
+      it.style.opacity = (1 - Math.abs(n) * 0.32).toFixed(2);
+      it.style.zIndex = Math.round(100 - Math.abs(n) * 50);
+    }
+  }
+
+  // eased scroll model: we lerp scrollLeft toward `target` every frame
+  const maxScroll = () => wrap.scrollWidth - wrap.clientWidth;
+  const clamp = v => Math.max(0, Math.min(maxScroll(), v));
+  let target = wrap.scrollLeft, current = wrap.scrollLeft, running = false;
+  function loop(){
+    current += (target - current) * SCROLL_EASE;
+    if(Math.abs(target - current) < 0.4){ current = target; running = false; }
+    wrap.scrollLeft = current;
+    render();
+    if(running) requestAnimationFrame(loop);
+  }
+  function nudge(delta){
+    target = clamp(target + delta);
+    if(!running){ running = true; requestAnimationFrame(loop); }
+  }
+
+  // wheel (vertical or horizontal) drives the eased target
+  wrap.addEventListener("wheel", e=>{
+    const d = Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    nudge(d * SCROLL_SPEED); e.preventDefault();
+  }, {passive:false});
+
+  // drag to scroll (1:1, but feeds the same eased target on release)
+  let down = false, startX = 0, startScroll = 0, moved = false;
+  wrap.addEventListener("pointerdown", e=>{
+    down = true; moved = false; startX = e.clientX; startScroll = wrap.scrollLeft;
+    running = false; wrap.classList.add("dragging"); wrap.setPointerCapture(e.pointerId);
+  });
+  wrap.addEventListener("pointermove", e=>{
+    if(!down) return;
+    const dx = e.clientX - startX;
+    if(Math.abs(dx) > 4) moved = true;
+    current = target = clamp(startScroll - dx);
+    wrap.scrollLeft = current; render();
+  });
+  const end = ()=>{ down = false; wrap.classList.remove("dragging"); };
+  wrap.addEventListener("pointerup", end);
+  wrap.addEventListener("pointercancel", end);
+  wrap.addEventListener("click", e=>{ if(moved){ e.preventDefault(); e.stopPropagation(); } }, true);
+
+  // native scrollbar / touch scroll also repaints
+  wrap.addEventListener("scroll", ()=>{ if(!down && !running){ current = target = wrap.scrollLeft; render(); } }, {passive:true});
+  window.addEventListener("resize", render);
+
+  // start centred on the second item so the coverflow reads immediately
+  requestAnimationFrame(()=>{
+    if(items[1]) current = target = wrap.scrollLeft = items[1].offsetLeft - (wrap.clientWidth - items[1].offsetWidth) / 2;
+    render();
+  });
+})();
+
 // ---------- mega-menu header ----------
 (function megamenu(){
   const body = document.body;
