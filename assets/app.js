@@ -90,7 +90,12 @@
     ...document.querySelectorAll(".grid"),
     ...document.querySelectorAll(".cattiles"),
   ];
-  const singles = [document.querySelector(".hero"), document.querySelector(".gallery"), document.querySelector(".pinfo")].filter(Boolean);
+  const singles = [
+    document.querySelector(".showcase-copy"), document.querySelector(".collage"),
+    document.querySelector(".gallery"), document.querySelector(".pinfo"),
+    ...document.querySelectorAll(".rail-sec"), ...document.querySelectorAll(".secttl"),
+    document.querySelector(".bento"), document.querySelector(".trust"),
+  ].filter(Boolean);
   const io = new IntersectionObserver((entries)=>{
     entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
   }, {threshold:0.08, rootMargin:"0px 0px -40px 0px"});
@@ -115,6 +120,16 @@
       el.style.transform = `perspective(700px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-3px)`;
     });
     el.addEventListener("pointerleave", ()=>{ el.style.transform = ""; });
+  });
+
+  // horizontal rail scroll buttons
+  document.querySelectorAll(".rail-sec").forEach(sec=>{
+    const rail = sec.querySelector(".rail");
+    const l = sec.querySelector(".railbtn.l"), r = sec.querySelector(".railbtn.r");
+    if(!rail || !l || !r) return;
+    const step = () => Math.max(rail.clientWidth * 0.8, 260);
+    l.addEventListener("click", ()=> rail.scrollBy({left:-step(), behavior:"smooth"}));
+    r.addEventListener("click", ()=> rail.scrollBy({left: step(), behavior:"smooth"}));
   });
 
   // shrinking header
