@@ -47,36 +47,34 @@
   };
 })();
 
-// ---------- header search ----------
-(function search(){
+// ---------- search results page (/search.html?q=...) ----------
+(function searchPage(){
+  const grid = document.getElementById("searchResults");
+  if(!grid) return; // only runs on /search.html
+  const q = (new URLSearchParams(location.search).get("q") || "").trim();
   const input = document.getElementById("q");
-  const results = document.getElementById("results");
-  if(!input || !results) return;
-  let index = null;
+  if(input) input.value = q;
+  const title = document.getElementById("searchTitle");
+  const count = document.getElementById("searchCount");
+  const empty = document.getElementById("searchEmpty");
   const inr = n => "₹" + Number(n).toLocaleString("en-IN");
-  async function load(){
-    if(index) return index;
-    index = await fetch("/data/search-index.json").then(r=>r.json()).catch(()=>[]);
-    return index;
-  }
-  let t;
-  input.addEventListener("input", ()=>{
-    clearTimeout(t);
-    t = setTimeout(async ()=>{
-      const q = input.value.toLowerCase().trim();
-      if(!q){ results.style.display="none"; results.innerHTML=""; return; }
-      const data = await load();
-      const hits = data.filter(p => (p.b+" "+p.n).toLowerCase().includes(q)).slice(0,24);
-      results.innerHTML = hits.length
-        ? hits.map(p=>`<a class="card" href="/p/${p.i}.html">
-            <div class="imgwrap"><img loading="lazy" src="${p.img}" onerror="this.style.opacity=.2"/></div>
-            <div class="body"><div class="brand">${p.b}</div><div class="name">${p.n}</div>
-            <div class="price"><span class="now">${inr(p.p)}</span></div></div></a>`).join("")
-        : `<p style="color:#6b6b6b;padding:10px">No matches for “${q.replace(/</g,"")}”.</p>`;
-      results.style.display = "grid";
-      window.scrollTo({top:0, behavior:"instant"});
-    }, 160);
-  });
+  if(!q){ empty.style.display = "block"; return; }
+  title.textContent = `Search: “${q}”`;
+  document.title = `“${q}” · MyntraChoice`;
+  fetch("/data/search-index.json").then(r=>r.json()).then(data=>{
+    const ql = q.toLowerCase();
+    const hits = data.filter(p => (p.b + " " + p.n).toLowerCase().includes(ql));
+    count.textContent = `${hits.length} result${hits.length !== 1 ? "s" : ""}`;
+    if(!hits.length){
+      empty.textContent = `No matches for “${q}”. Try a different brand or keyword.`;
+      empty.style.display = "block";
+      return;
+    }
+    grid.innerHTML = hits.slice(0, 240).map(p=>`<a class="card" href="/p/${p.i}.html">
+        <div class="imgwrap"><img loading="lazy" src="${p.img}" onerror="this.style.opacity=.2"/></div>
+        <div class="body"><div class="brand">${p.b}</div><div class="name">${p.n}</div>
+        <div class="price"><span class="now">${inr(p.p)}</span></div></div></a>`).join("");
+  }).catch(()=>{ empty.textContent = "Could not load results."; empty.style.display = "block"; });
 })();
 
 // ---------- mega-menu header ----------
