@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>MyntraChoice — Curated Best of Myntra</title>
+<meta name="description" content="Hand-picked, top-rated fashion from Myntra. Only 4.3★+ products with thousands of happy buyers." />
+<style>
+  :root{
+    --bg:#faf7f5; --card:#fff; --ink:#231f20; --muted:#6b6b6b;
+    --brand:#ff3f6c; --brand-dark:#e01e4f; --line:#ececec; --star:#f5a623;
+    --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink)}
+  a{color:inherit;text-decoration:none}
+  header{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.9);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+  .bar{max-width:1180px;margin:0 auto;padding:14px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+  .logo{font-weight:800;font-size:22px;letter-spacing:-.5px}
+  .logo b{color:var(--brand)}
+  .tag{font-size:12px;color:var(--muted);border-left:1px solid var(--line);padding-left:12px}
+  .search{flex:1;min-width:200px;display:flex;align-items:center;background:#fff;border:1px solid var(--line);border-radius:10px;padding:9px 12px;gap:8px}
+  .search input{border:0;outline:0;flex:1;font-size:14px;background:transparent}
+  .hero{max-width:1180px;margin:26px auto 8px;padding:0 20px}
+  .hero h1{font-size:30px;margin:0 0 6px;letter-spacing:-.6px}
+  .hero p{margin:0;color:var(--muted);font-size:15px}
+  .controls{max-width:1180px;margin:18px auto;padding:0 20px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+  .chip{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-size:13px;cursor:pointer;white-space:nowrap;transition:.15s}
+  .chip:hover{border-color:var(--brand)}
+  .chip.on{background:var(--brand);border-color:var(--brand);color:#fff}
+  select{margin-left:auto;border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-size:13px;cursor:pointer}
+  .count{max-width:1180px;margin:0 auto;padding:0 20px 6px;color:var(--muted);font-size:13px}
+  .grid{max-width:1180px;margin:0 auto;padding:10px 20px 60px;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:20px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;overflow:hidden;box-shadow:var(--shadow);display:flex;flex-direction:column;transition:.18s}
+  .card:hover{transform:translateY(-3px);box-shadow:0 4px 10px rgba(0,0,0,.08),0 16px 40px rgba(0,0,0,.08)}
+  .imgwrap{position:relative;aspect-ratio:3/4;background:#f2efed;overflow:hidden}
+  .imgwrap img{width:100%;height:100%;object-fit:cover;display:block}
+  .rating{position:absolute;left:10px;bottom:10px;background:#fff;border-radius:6px;padding:3px 7px;font-size:12px;font-weight:700;display:flex;align-items:center;gap:3px;box-shadow:0 1px 4px rgba(0,0,0,.15)}
+  .rating .s{color:var(--star)}
+  .rating .n{color:var(--muted);font-weight:500}
+  .off{position:absolute;right:10px;top:10px;background:var(--brand);color:#fff;font-size:11px;font-weight:700;padding:3px 7px;border-radius:6px}
+  .body{padding:12px 13px 14px;display:flex;flex-direction:column;gap:6px;flex:1}
+  .brand{font-weight:700;font-size:14px}
+  .name{font-size:13px;color:var(--muted);line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;min-height:35px}
+  .price{display:flex;align-items:baseline;gap:7px;margin-top:2px}
+  .price .now{font-weight:800;font-size:16px}
+  .price .mrp{color:var(--muted);text-decoration:line-through;font-size:12px}
+  .price .pct{color:#22883b;font-size:12px;font-weight:700}
+  .buy{margin-top:8px;display:block;text-align:center;background:var(--brand);color:#fff;font-weight:700;font-size:13px;padding:10px;border-radius:10px;transition:.15s}
+  .buy:hover{background:var(--brand-dark)}
+  .empty{max-width:1180px;margin:40px auto;padding:0 20px;color:var(--muted);text-align:center}
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(20,18,19,.55);backdrop-filter:blur(3px);z-index:50;display:none;align-items:center;justify-content:center;padding:20px}
+  .overlay.on{display:flex}
+  .modal{background:#fff;border-radius:16px;max-width:820px;width:100%;max-height:90vh;overflow:auto;display:grid;grid-template-columns:1fr 1fr;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+  /* carousel */
+  .carousel{position:relative;background:#f6f4f3;aspect-ratio:3/4;overflow:hidden;display:flex;flex-direction:column}
+  .slides{flex:1;position:relative;overflow:hidden}
+  .slide{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity .25s;pointer-events:none}
+  .slide.on{opacity:1;pointer-events:auto}
+  .slide img{max-width:100%;max-height:100%;width:auto;height:auto;object-fit:contain}
+  .slide iframe{width:100%;height:100%;border:0}
+  .cbtn{position:absolute;top:50%;transform:translateY(-50%);z-index:3;background:rgba(255,255,255,.92);border:0;width:36px;height:36px;border-radius:50%;font-size:18px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center}
+  .cbtn:hover{background:#fff}
+  .cbtn.prev{left:10px}.cbtn.next{right:10px}
+  .vtag{position:absolute;top:10px;left:10px;z-index:3;background:#231f20;color:#fff;font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px}
+  .thumbs{display:flex;gap:6px;padding:8px;overflow-x:auto;background:#fff;border-top:1px solid var(--line)}
+  .thumbs::-webkit-scrollbar{height:5px}.thumbs::-webkit-scrollbar-thumb{background:#ccc;border-radius:3px}
+  .thumb{flex:0 0 auto;width:46px;height:60px;border-radius:6px;overflow:hidden;border:2px solid transparent;cursor:pointer;background:#eee}
+  .thumb.on{border-color:var(--brand)}
+  .thumb img{width:100%;height:100%;object-fit:cover}
+  .thumb.vid{display:flex;align-items:center;justify-content:center;background:#231f20;color:#fff;font-size:18px;width:46px}
+  .modal .mbody{padding:22px 24px;display:flex;flex-direction:column;gap:12px}
+  .modal .mbrand{font-weight:800;font-size:20px}
+  .modal .mname{color:var(--muted);font-size:14px;line-height:1.4}
+  .modal .mrow{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .modal .badge{background:#f4f4f4;border-radius:7px;padding:4px 9px;font-size:12px;font-weight:600}
+  .modal .badge.rate{background:#f0faf2;color:var(--ok,#22883b)}
+  .modal .mprice .now{font-weight:800;font-size:22px}
+  .modal .mprice .mrp{color:var(--muted);text-decoration:line-through;margin-left:8px}
+  .modal .mprice .pct{color:#22883b;font-weight:700;margin-left:8px;font-size:14px}
+  .modal .sizes{display:flex;gap:6px;flex-wrap:wrap}
+  .modal .sz{border:1px solid var(--line);border-radius:7px;padding:5px 10px;font-size:12px}
+  .modal .mbuy{margin-top:auto;background:var(--brand);color:#fff;text-align:center;font-weight:700;padding:13px;border-radius:11px}
+  .modal .mbuy:hover{background:var(--brand-dark)}
+  .modal .close{position:absolute;top:26px;right:28px;background:#fff;border-radius:50%;width:34px;height:34px;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+  .phist{border-top:1px solid var(--line);padding-top:12px}
+  .phist .lbl{font-size:12px;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between}
+  .phist svg{width:100%;height:52px;display:block}
+  @media(max-width:620px){.modal{grid-template-columns:1fr}.modal .mimg{aspect-ratio:16/11}}
+  footer{border-top:1px solid var(--line);padding:22px 20px;text-align:center;color:var(--muted);font-size:12px}
+  footer a{color:var(--brand)}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <div class="logo">Myntra<b>Choice</b></div>
+    <div class="tag">Only 4.3★+ picks</div>
+    <label class="search">🔎<input id="q" type="search" placeholder="Search brand or product…" /></label>
+  </div>
+</header>
+
+<div class="hero">
+  <h1>The best of Myntra, hand-picked.</h1>
+  <p>Every item here is rated 4.3★ or higher by thousands of real buyers. Tap through to shop on Myntra.</p>
+</div>
+
+<div class="controls" id="cats"></div>
+<div class="count" id="count"></div>
+<div class="grid" id="grid"></div>
+<div class="empty" id="empty" style="display:none">No products match. Try clearing the search or filters.</div>
+
+<div class="overlay" id="overlay">
+  <div class="close" id="close">×</div>
+  <div class="modal" id="modal"></div>
+</div>
+
+<footer>
+  MyntraChoice curates products available on Myntra. Prices &amp; availability may change on Myntra.<br/>
+  As an affiliate, we may earn a commission on purchases — at no extra cost to you.
+</footer>
+
+<script>
+const state={all:[],cat:"All",brand:"All",sort:"rating",q:""};
+
+function inr(n){return "₹"+Number(n).toLocaleString("en-IN")}
+function stars(r){return `<span class="s">★</span>${r.toFixed(1)}`}
+
+function render(){
+  const g=document.getElementById("grid");
+  let items=state.all.filter(p=>{
+    if(state.cat!=="All" && p.storeCategory!==state.cat) return false;
+    if(state.q){const t=(p.brand+" "+p.name).toLowerCase();if(!t.includes(state.q)) return false;}
+    return true;
+  });
+  const s=state.sort;
+  items.sort((a,b)=>{
+    if(s==="rating") return b.rating-a.rating || b.ratingCount-a.ratingCount;
+    if(s==="discount") return b.discountPercent-a.discountPercent;
+    if(s==="priceLow") return a.price-b.price;
+    if(s==="priceHigh") return b.price-a.price;
+    return 0;
+  });
+  document.getElementById("count").textContent=`${items.length} product${items.length!==1?"s":""}`;
+  document.getElementById("empty").style.display=items.length?"none":"block";
+  g.innerHTML=items.map(p=>`
+    <div class="card" data-id="${p.productId}">
+      <div class="imgwrap">
+        <img loading="lazy" src="${p.image}" alt="${p.brand} ${p.name}" onerror="this.style.opacity=.25"/>
+        <div class="rating">${stars(p.rating)} <span class="n">| ${p.ratingCount.toLocaleString("en-IN")}</span></div>
+        ${p.discountPercent>0?`<div class="off">${p.discountPercent}% OFF</div>`:""}
+      </div>
+      <div class="body">
+        <div class="brand">${p.brand}</div>
+        <div class="name">${p.name}</div>
+        <div class="price">
+          <span class="now">${inr(p.price)}</span>
+          ${p.mrp>p.price?`<span class="mrp">${inr(p.mrp)}</span><span class="pct">${p.discountPercent}% off</span>`:""}
+        </div>
+        <a class="buy" href="${p.affiliateUrl}" target="_blank" rel="nofollow noopener sponsored" onclick="event.stopPropagation()">Buy on Myntra</a>
+      </div>
+    </div>`).join("");
+  g.querySelectorAll(".card").forEach(c=>c.addEventListener("click",()=>openModal(c.dataset.id)));
+}
+
+function sparkline(hist){
+  if(!hist||hist.length<2) return "";
+  const ps=hist.map(h=>h.price), min=Math.min(...ps), max=Math.max(...ps), lo=Math.min(...ps);
+  const w=280,h=48,pad=4, span=(max-min)||1;
+  const coords=hist.map((hh,i)=>{
+    const x=pad+i*(w-2*pad)/(hist.length-1);
+    const y=(h-pad)-((hh.price-min)/span)*(h-2*pad);
+    return `${x.toFixed(1)},${y.toFixed(1)}`;
+  }).join(" ");
+  const first=ps[0], last=ps[ps.length-1];
+  const trend = last<first ? `<span style="color:#22883b;font-weight:700">▼ dropped ${inr(first-last)}</span>` : last>first ? `<span style="color:var(--brand);font-weight:700">▲ up ${inr(last-first)}</span>` : "no change";
+  return `<div class="phist">
+      <div class="lbl"><span>Price history (${hist.length} points)</span><span>Lowest: ${inr(lo)} · ${trend}</span></div>
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="none"><polyline fill="none" stroke="#ff3f6c" stroke-width="2" points="${coords}"/></svg>
+    </div>`;
+}
+
+let carousel={slides:[],idx:0};
+function showSlide(i){
+  const slides=document.querySelectorAll(".slide");
+  const thumbs=document.querySelectorAll(".thumb");
+  if(!slides.length) return;
+  carousel.idx=(i+slides.length)%slides.length;
+  slides.forEach((s,k)=>{
+    const on=k===carousel.idx;
+    s.classList.toggle("on",on);
+    // lazy-load video iframe only when its slide is shown
+    if(on && s.dataset.video && !s.querySelector("iframe")){
+      s.innerHTML=`<iframe src="${s.dataset.video}" allow="encrypted-media" allowfullscreen></iframe>`;
+    }
+    // stop video when leaving its slide
+    if(!on && s.dataset.video){ const f=s.querySelector("iframe"); if(f) s.innerHTML=""; }
+  });
+  thumbs.forEach((t,k)=>t.classList.toggle("on",k===carousel.idx));
+}
+
+function openModal(id){
+  const p=state.all.find(x=>String(x.productId)===String(id));
+  if(!p) return;
+  const imgs=(p.images&&p.images.length?p.images:[p.image]);
+  // build slide + thumb lists: images first, then a video slide if present
+  const media=imgs.map(u=>({type:"img",src:u}));
+  if(p.videoUrl) media.push({type:"vid",src:p.videoUrl});
+  carousel={idx:0};
+  const slidesHtml=media.map((m,i)=>m.type==="img"
+    ? `<div class="slide${i===0?" on":""}"><img src="${m.src}" alt="${p.brand}" onerror="this.style.opacity=.2"/></div>`
+    : `<div class="slide" data-video="${m.src}"></div>`).join("");
+  const thumbsHtml=media.map((m,i)=>m.type==="img"
+    ? `<div class="thumb${i===0?" on":""}" data-i="${i}"><img src="${m.src}" loading="lazy"/></div>`
+    : `<div class="thumb vid" data-i="${i}">▶</div>`).join("");
+  const nav=media.length>1?`<button class="cbtn prev" data-dir="-1">‹</button><button class="cbtn next" data-dir="1">›</button>`:"";
+  document.getElementById("modal").innerHTML=`
+    <div class="carousel">
+      ${p.videoUrl?'<span class="vtag">▶ Video</span>':''}
+      <div class="slides">${slidesHtml}${nav}</div>
+      ${media.length>1?`<div class="thumbs">${thumbsHtml}</div>`:""}
+    </div>
+    <div class="mbody">
+      <div class="mbrand">${p.brand}</div>
+      <div class="mname">${p.name}</div>
+      <div class="mrow">
+        <span class="badge rate">★ ${p.rating.toFixed(1)}</span>
+        <span class="badge">${p.ratingCount.toLocaleString("en-IN")} ratings</span>
+        ${p.colour?`<span class="badge">${p.colour}</span>`:""}
+        ${p.articleType?`<span class="badge">${p.articleType}</span>`:""}
+      </div>
+      <div class="mprice"><span class="now">${inr(p.price)}</span>${p.mrp>p.price?`<span class="mrp">${inr(p.mrp)}</span><span class="pct">${p.discountPercent}% off</span>`:""}</div>
+      ${p.sizes&&p.sizes.length?`<div><div class="lbl" style="font-size:12px;color:var(--muted);margin-bottom:6px">Sizes</div><div class="sizes">${p.sizes.map(s=>`<span class="sz">${s}</span>`).join("")}</div></div>`:""}
+      ${sparkline(p.priceHistory)}
+      <a class="mbuy" href="${p.affiliateUrl}" target="_blank" rel="nofollow noopener sponsored">Buy on Myntra →</a>
+    </div>`;
+  const modal=document.getElementById("modal");
+  modal.querySelectorAll(".cbtn").forEach(b=>b.onclick=()=>showSlide(carousel.idx+Number(b.dataset.dir)));
+  modal.querySelectorAll(".thumb").forEach(t=>t.onclick=()=>showSlide(Number(t.dataset.i)));
+  document.getElementById("overlay").classList.add("on");
+}
+function closeModal(){document.getElementById("overlay").classList.remove("on");document.getElementById("modal").innerHTML="";}
+document.getElementById("close").onclick=closeModal;
+document.getElementById("overlay").addEventListener("click",e=>{if(e.target.id==="overlay")closeModal();});
+document.addEventListener("keydown",e=>{
+  if(e.key==="Escape")closeModal();
+  if(document.getElementById("overlay").classList.contains("on")){
+    if(e.key==="ArrowRight")showSlide(carousel.idx+1);
+    if(e.key==="ArrowLeft")showSlide(carousel.idx-1);
+  }
+});
+
+function buildCats(){
+  const cats=["All",...Array.from(new Set(state.all.map(p=>p.storeCategory))).sort()];
+  const c=document.getElementById("cats");
+  c.innerHTML=cats.map(x=>`<button class="chip${x===state.cat?" on":""}" data-cat="${x}">${x}</button>`).join("")
+    +`<select id="sort">
+        <option value="rating">Top rated</option>
+        <option value="discount">Biggest discount</option>
+        <option value="priceLow">Price: low to high</option>
+        <option value="priceHigh">Price: high to low</option>
+      </select>`;
+  c.querySelectorAll(".chip").forEach(b=>b.onclick=()=>{state.cat=b.dataset.cat;buildCats();render();});
+  document.getElementById("sort").value=state.sort;
+  document.getElementById("sort").onchange=e=>{state.sort=e.target.value;render();};
+}
+
+document.getElementById("q").addEventListener("input",e=>{state.q=e.target.value.toLowerCase().trim();render();});
+
+fetch("data/products.json")
+  .then(r=>r.json())
+  .then(d=>{state.all=d.products||[];buildCats();render();})
+  .catch(()=>{document.getElementById("empty").style.display="block";document.getElementById("empty").textContent="Could not load products.";});
+</script>
+</body>
+</html>
