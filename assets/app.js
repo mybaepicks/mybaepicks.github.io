@@ -78,3 +78,65 @@
     }, 160);
   });
 })();
+
+// ---------- motion layer (React Bits vibe, vanilla) ----------
+(function motion(){
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if(reduce) return;
+  document.documentElement.classList.add("motion");
+
+  // scroll reveal with per-container stagger
+  const groups = [
+    ...document.querySelectorAll(".grid"),
+    ...document.querySelectorAll(".cattiles"),
+  ];
+  const singles = [document.querySelector(".hero"), document.querySelector(".gallery"), document.querySelector(".pinfo")].filter(Boolean);
+  const io = new IntersectionObserver((entries)=>{
+    entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add("in"); io.unobserve(e.target); } });
+  }, {threshold:0.08, rootMargin:"0px 0px -40px 0px"});
+  singles.forEach(el=>{ el.classList.add("reveal"); io.observe(el); });
+  groups.forEach(g=>{
+    [...g.children].forEach((child,i)=>{
+      child.classList.add("reveal");
+      child.style.setProperty("--d", Math.min(i,8)*60 + "ms");
+      io.observe(child);
+    });
+  });
+
+  // pointer spotlight + subtle tilt on cards/tiles
+  const tilters = document.querySelectorAll(".card, .cattile");
+  tilters.forEach(el=>{
+    el.addEventListener("pointermove", ev=>{
+      const r = el.getBoundingClientRect();
+      const px = (ev.clientX - r.left)/r.width, py = (ev.clientY - r.top)/r.height;
+      el.style.setProperty("--mx", px*100+"%");
+      el.style.setProperty("--my", py*100+"%");
+      const rx = (0.5 - py)*6, ry = (px - 0.5)*6;
+      el.style.transform = `perspective(700px) rotateX(${rx.toFixed(2)}deg) rotateY(${ry.toFixed(2)}deg) translateY(-3px)`;
+    });
+    el.addEventListener("pointerleave", ()=>{ el.style.transform = ""; });
+  });
+
+  // shrinking header
+  const header = document.querySelector("header");
+  if(header){
+    const onScroll = ()=> header.classList.toggle("scrolled", window.scrollY > 8);
+    onScroll(); window.addEventListener("scroll", onScroll, {passive:true});
+  }
+
+  // click spark
+  addEventListener("pointerdown", ev=>{
+    const n = 8;
+    for(let i=0;i<n;i++){
+      const s = document.createElement("span");
+      s.className = "spark";
+      s.style.left = ev.clientX+"px"; s.style.top = ev.clientY+"px";
+      document.body.appendChild(s);
+      const ang = (i/n)*Math.PI*2, dist = 22+Math.random()*14;
+      s.animate([
+        {transform:"translate(-50%,-50%) scale(1)", opacity:1},
+        {transform:`translate(${Math.cos(ang)*dist-50}%, ${Math.sin(ang)*dist-50}%) scale(0)`, opacity:0}
+      ], {duration:460, easing:"cubic-bezier(.2,.7,.2,1)"}).onfinish = ()=> s.remove();
+    }
+  }, {passive:true});
+})();

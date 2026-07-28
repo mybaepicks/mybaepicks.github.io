@@ -110,3 +110,40 @@ footer{border-top:1px solid var(--line);margin-top:50px;padding:24px 20px;text-a
   .gallery{position:static}
   .hero h1{font-size:24px}
 }
+
+/* ============ MOTION LAYER (vanilla port of React Bits vibes) ============ */
+@media (prefers-reduced-motion: no-preference){
+  /* scroll reveal: blur + rise, staggered via --d */
+  html.motion .reveal{opacity:0;transform:translateY(22px);filter:blur(8px);
+    transition:opacity .6s cubic-bezier(.2,.7,.2,1),transform .6s cubic-bezier(.2,.7,.2,1),filter .6s ease;
+    transition-delay:var(--d,0ms)}
+  html.motion .reveal.in{opacity:1;transform:none;filter:none}
+
+  /* animated gradient hero headline */
+  .hero h1{
+    background:linear-gradient(100deg,#231f20 0%,#ff3f6c 30%,#a020f0 55%,#231f20 80%);
+    background-size:220% auto;-webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:transparent;animation:shine 6s linear infinite}
+  @keyframes shine{to{background-position:220% center}}
+
+  /* page fade-in */
+  body{animation:pagein .5s ease both}
+  @keyframes pagein{from{opacity:0}to{opacity:1}}
+
+  /* tilt + shine on interactive cards */
+  .card,.cattile{transform-style:preserve-3d;transition:transform .18s ease,box-shadow .18s ease}
+  .card .imgwrap::after,.cattile::after{content:"";position:absolute;inset:0;pointer-events:none;
+    background:radial-gradient(240px circle at var(--mx,50%) var(--my,50%),rgba(255,255,255,.35),transparent 45%);
+    opacity:0;transition:opacity .25s}
+  .card:hover .imgwrap::after,.cattile:hover::after{opacity:1}
+}
+
+/* shrinking sticky header */
+header{transition:box-shadow .25s ease}
+header.scrolled{box-shadow:0 4px 20px rgba(0,0,0,.07)}
+header.scrolled .bar{padding-top:9px;padding-bottom:9px}
+header.scrolled .catnav{padding-bottom:7px}
+
+/* click spark */
+.spark{position:fixed;pointer-events:none;z-index:9999;width:6px;height:6px;border-radius:50%;
+  background:var(--brand);will-change:transform,opacity}
