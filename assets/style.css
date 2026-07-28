@@ -345,3 +345,11 @@ body.nav-open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg
 .rail.compact>.card{flex:0 0 168px}
 .rail.compact .name{-webkit-line-clamp:1;min-height:0}
 .rail.autorail{scroll-snap-type:none}
+
+/* full-bleed auto rail with edge fade (Best Picks) */
+.rail-sec.fullbleed{max-width:none;margin:26px 0 8px;padding:0}
+.rail-sec.fullbleed .rail-head{max-width:var(--wrap);margin:0 auto 14px;padding:0 20px}
+.rail-sec.fullbleed .rail{padding:6px 40px 16px}
+.rail.autorail{scroll-snap-type:none;
+  -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
