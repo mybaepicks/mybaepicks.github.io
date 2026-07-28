@@ -468,3 +468,16 @@ body.search-open .search{display:flex}
 
 /* footer signature */
 footer .madeby{margin-top:8px;font-weight:600;color:var(--ink);font-family:var(--font-display)}
+
+/* desktop: keep the expanded search field adjacent to its icon (no gap) */
+@media(min-width:601px){
+  .search{margin-left:auto}
+  body.search-open .search-toggle{margin-left:8px}
+}
+
+/* tablet/stacked hero: cap collage width so its absolutely-positioned cards
+   don't balloon full-width and overlap the copy/CTA above */
+@media(max-width:820px){
+  .showcase-art{display:flex;justify-content:center}
+  .collage{width:100%;max-width:400px;height:360px;margin:0 auto}
+}
