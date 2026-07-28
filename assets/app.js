@@ -82,7 +82,7 @@
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.querySelectorAll(".rail.autorail").forEach(rail=>{
     let paused = false, dragging = false, startX = 0, startScroll = 0, moved = false;
-    const SPEED = 0.45; // px per frame
+    const SPEED = 1.2; // px per frame
     // pause on hover / focus
     rail.addEventListener("pointerenter", ()=> paused = true);
     rail.addEventListener("pointerleave", ()=>{ if(!dragging) paused = false; });
