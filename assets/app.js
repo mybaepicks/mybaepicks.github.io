@@ -79,6 +79,45 @@
   });
 })();
 
+// ---------- mega-menu header ----------
+(function megamenu(){
+  const body = document.body;
+  const isMobile = () => window.matchMedia("(max-width:820px)").matches;
+
+  // desktop: dim backdrop while hovering a nav item (hover-intent)
+  const nav = document.querySelector(".mainnav");
+  let hideT;
+  document.querySelectorAll(".navitem").forEach(item=>{
+    item.addEventListener("mouseenter", ()=>{ if(isMobile()) return; clearTimeout(hideT); body.classList.add("menu-open"); });
+    item.addEventListener("mouseleave", ()=>{ if(isMobile()) return; hideT = setTimeout(()=>body.classList.remove("menu-open"), 120); });
+    // mobile: tap top link toggles accordion instead of navigating
+    const top = item.querySelector(".navtop");
+    top.addEventListener("click", e=>{
+      if(!isMobile()) return;
+      e.preventDefault();
+      const open = item.classList.contains("open");
+      document.querySelectorAll(".navitem").forEach(i=>i.classList.remove("open"));
+      item.classList.toggle("open", !open);
+    });
+  });
+  const backdrop = document.querySelector(".megabackdrop");
+  if(backdrop) backdrop.addEventListener("click", ()=>{ body.classList.remove("menu-open","nav-open"); });
+
+  // mobile drawer toggle
+  const burger = document.querySelector(".burger");
+  if(burger){
+    burger.addEventListener("click", ()=>{
+      const open = body.classList.toggle("nav-open");
+      body.classList.toggle("menu-open", open);
+    });
+  }
+  // close drawer when a real link is tapped
+  document.querySelectorAll(".mega a, .navtop.on").forEach(a=>a.addEventListener("click", ()=>{
+    if(isMobile()) body.classList.remove("nav-open","menu-open");
+  }));
+  addEventListener("keydown", e=>{ if(e.key==="Escape") body.classList.remove("menu-open","nav-open"); });
+})();
+
 // ---------- motion layer (React Bits vibe, vanilla) ----------
 (function motion(){
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
