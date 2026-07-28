@@ -465,3 +465,6 @@ body.search-open .search{display:flex}
   .search{order:5;flex-basis:100%;width:100%;margin:0}
   body.search-open .search{display:flex;margin:6px 0 2px}
 }
+
+/* footer signature */
+footer .madeby{margin-top:8px;font-weight:600;color:var(--ink);font-family:var(--font-display)}
