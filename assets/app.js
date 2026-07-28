@@ -102,11 +102,19 @@
     rail.addEventListener("click", e=>{ if(moved){ e.preventDefault(); e.stopPropagation(); } }, true);
 
     if(reduce) return; // no auto-motion for reduced-motion users
+    // items are duplicated (set A + set A). Loop distance = width of one set,
+    // measured precisely from where the second copy begins so the wrap is seamless.
+    const cards = rail.querySelectorAll(".card");
+    const loopWidth = () => cards.length >= 2
+      ? cards[cards.length / 2].offsetLeft - cards[0].offsetLeft
+      : rail.scrollWidth / 2;
     function tick(){
       if(!paused){
         rail.scrollLeft += SPEED;
-        const half = rail.scrollWidth / 2;      // items are duplicated
-        if(rail.scrollLeft >= half) rail.scrollLeft -= half;
+        const w = loopWidth();
+        // wrap in both directions so drag + auto stay in the infinite range
+        if(rail.scrollLeft >= w) rail.scrollLeft -= w;
+        else if(rail.scrollLeft < 0) rail.scrollLeft += w;
       }
       requestAnimationFrame(tick);
     }
