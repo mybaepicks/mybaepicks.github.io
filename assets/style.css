@@ -481,3 +481,6 @@ footer .madeby{margin-top:8px;font-weight:600;color:var(--ink);font-family:var(-
   .showcase-art{display:flex;justify-content:center}
   .collage{width:100%;max-width:400px;height:360px;margin:0 auto}
 }
+
+/* smooth native touch scrolling for rails (esp. the Best Picks auto rail) */
+.rail{-webkit-overflow-scrolling:touch}

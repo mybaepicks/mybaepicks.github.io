@@ -85,24 +85,31 @@
 (function autoRail(){
   const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   document.querySelectorAll(".rail.autorail").forEach(rail=>{
-    let paused = false, dragging = false, startX = 0, startScroll = 0, moved = false;
+    let paused = false, resumeT = null;
     const SPEED = 1.2; // px per frame
-    // pause on hover / focus
-    rail.addEventListener("pointerenter", ()=> paused = true);
-    rail.addEventListener("pointerleave", ()=>{ if(!dragging) paused = false; });
-    // drag to scroll (also pauses)
-    rail.addEventListener("pointerdown", e=>{
-      dragging = true; paused = true; moved = false;
-      startX = e.clientX; startScroll = rail.scrollLeft; rail.setPointerCapture(e.pointerId);
+    const pause = () => { paused = true; clearTimeout(resumeT); };
+    const resumeSoon = (ms=1400) => { clearTimeout(resumeT); resumeT = setTimeout(()=>{ paused = false; }, ms); };
+
+    // TOUCH: let the browser handle native horizontal scrolling; just pause the
+    // auto-advance while the finger is down and for a moment after (momentum).
+    rail.addEventListener("touchstart", pause, {passive:true});
+    rail.addEventListener("touchend",  ()=>resumeSoon(), {passive:true});
+    rail.addEventListener("touchcancel",()=>resumeSoon(), {passive:true});
+
+    // MOUSE: hover pauses; click-drag scrolls (desktop only)
+    let dragging = false, startX = 0, startScroll = 0, moved = false;
+    rail.addEventListener("mouseenter", pause);
+    rail.addEventListener("mouseleave", ()=>{ if(!dragging){ clearTimeout(resumeT); paused = false; } });
+    rail.addEventListener("mousedown", e=>{
+      dragging = true; moved = false; paused = true; clearTimeout(resumeT);
+      startX = e.clientX; startScroll = rail.scrollLeft; e.preventDefault();
     });
-    rail.addEventListener("pointermove", e=>{
+    window.addEventListener("mousemove", e=>{
       if(!dragging) return;
       const dx = e.clientX - startX; if(Math.abs(dx) > 4) moved = true;
       rail.scrollLeft = startScroll - dx;
     });
-    const endDrag = e=>{ dragging = false; paused = false; };
-    rail.addEventListener("pointerup", endDrag);
-    rail.addEventListener("pointercancel", endDrag);
+    window.addEventListener("mouseup", ()=>{ if(dragging){ dragging = false; paused = false; } });
     rail.addEventListener("click", e=>{ if(moved){ e.preventDefault(); e.stopPropagation(); } }, true);
 
     if(reduce) return; // no auto-motion for reduced-motion users
