@@ -335,3 +335,8 @@ body.nav-open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg
 .pagination .pg:hover{border-color:var(--brand);color:var(--brand)}
 .pagination .pg.on{background:var(--brand);border-color:var(--brand);color:#fff}
 .pagination .pg.gap{border:0;background:none;pointer-events:none;color:var(--muted)}
+
+/* mega-menu: wrap many groups, tighten spacing for wide sections */
+.mega-inner{flex-wrap:wrap;gap:28px 34px;row-gap:22px}
+.mega .col{min-width:112px}
+.mega .promo{align-self:flex-start}
