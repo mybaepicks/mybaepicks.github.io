@@ -28,10 +28,14 @@
   const grid = document.getElementById("catgrid");
   if(!sel || !grid) return;
   const cards = [...grid.children];
+  const firstNum = (el) => {
+    const m = el && el.textContent.match(/[\d,]+(\.\d+)?/);
+    return m ? parseFloat(m[0].replace(/,/g, "")) : 0;
+  };
   const val = c => ({
-    rating:  parseFloat(c.querySelector(".rating").textContent.replace(/[^0-9.].*/,"")) ,
-    now:     parseInt(c.querySelector(".now").textContent.replace(/[^0-9]/g,"")),
-    off:     (c.querySelector(".off") ? parseInt(c.querySelector(".off").textContent) : 0),
+    rating: firstNum(c.querySelector(".rating")),   // "★4.8 | 56" -> 4.8
+    now:    firstNum(c.querySelector(".now")),       // "₹1,082" -> 1082
+    off:    firstNum(c.querySelector(".off")),       // "55% OFF" -> 55 (0 if none)
   });
   sel.onchange = () => {
     const s = sel.value;
@@ -158,7 +162,17 @@
   document.querySelectorAll(".mega a, .navtop.on").forEach(a=>a.addEventListener("click", ()=>{
     if(isMobile()) body.classList.remove("nav-open","menu-open");
   }));
-  addEventListener("keydown", e=>{ if(e.key==="Escape") body.classList.remove("menu-open","nav-open"); });
+
+  // mobile search icon toggles the search field
+  const stoggle = document.querySelector(".search-toggle");
+  if(stoggle){
+    stoggle.addEventListener("click", ()=>{
+      const open = body.classList.toggle("search-open");
+      stoggle.setAttribute("aria-expanded", String(open));
+      if(open){ const inp = document.getElementById("q"); if(inp) setTimeout(()=>inp.focus(), 60); }
+    });
+  }
+  addEventListener("keydown", e=>{ if(e.key==="Escape") body.classList.remove("menu-open","nav-open","search-open"); });
 })();
 
 // ---------- motion layer (React Bits vibe, vanilla) ----------

@@ -305,10 +305,10 @@ body.nav-open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg
 
 @media(max-width:820px){
   .burger{display:flex}
-  .mainnav{position:fixed;top:0;left:0;bottom:0;width:82%;max-width:330px;background:#fff;
-    flex-direction:column;align-items:stretch;padding:64px 0 24px;overflow:auto;z-index:60;
+  .mainnav{position:fixed;top:0;left:0;margin:0;height:100vh;height:100dvh;width:82%;max-width:330px;background:#fff;
+    flex-direction:column;align-items:stretch;padding:64px 0 24px;overflow-y:auto;z-index:60;
     transform:translateX(-100%);transition:transform .32s cubic-bezier(.2,.7,.2,1);box-shadow:0 0 40px rgba(0,0,0,.2)}
-  body.nav-open .mainnav{transform:none}
+  body.nav-open .mainnav{transform:translateX(0)}
   .navitem{border-bottom:1px solid var(--line)}
   .navtop{padding:16px 22px;justify-content:space-between}
   .navtop::after{display:none}
@@ -386,3 +386,59 @@ body{font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-fo
 .price .now,.pprice .now,.stat b,.rating,.off,.pct{font-variant-numeric:tabular-nums}
 /* let headlines wrap gracefully */
 .showcase h1,.secttl h2,.pagehead h1,.pname{text-wrap:balance}
+
+/* ============================================================
+   MOBILE POLISH — smaller cards, search on its own row
+   ============================================================ */
+@media(max-width:600px){
+  /* header: hamburger + logo + search icon on row 1; search field expands on row 2 */
+  .bar{flex-wrap:wrap;row-gap:0;gap:10px;padding:9px 14px;min-height:0}
+  .logo{font-size:20px;order:2}
+  .burger{order:1}
+  .search-toggle{display:flex;align-items:center;justify-content:center;order:3;margin-left:auto}
+  .search{order:5;flex-basis:100%;width:100%;margin:0;padding:8px 11px;display:none}
+  body.search-open .search{display:flex;margin:6px 0 2px}
+
+  /* product grids: 2 columns of smaller cards (was 1 huge column) */
+  .grid{grid-template-columns:repeat(2,1fr);gap:12px}
+  .searchgrid{padding:14px 14px}
+  .catsec,.rail-sec{padding-left:14px;padding-right:14px}
+  .rail-sec.fullbleed{padding-left:0;padding-right:0}
+  .rail-sec.fullbleed .rail-head{padding:0 14px}
+  .rail-sec.fullbleed .rail{padding:6px 14px 14px}
+
+  /* horizontal rail cards: smaller so ~2.3 peek into view */
+  .rail>.card{flex:0 0 150px}
+  .rail.compact>.card{flex:0 0 140px}
+
+  /* tighten card internals */
+  .card .brand{font-size:13px}
+  .card .name{font-size:12px;min-height:32px}
+  .card .price .now{font-size:15px}
+  .off,.vbadge{font-size:10px;padding:2px 6px}
+  .rating{font-size:11px;padding:2px 6px}
+
+  /* hero + sections */
+  .showcase-inner{padding:24px 16px 30px;gap:20px}
+  .secttl{margin:34px auto 4px}
+  .sechead h2,.rail-head h2,.secttl h2{font-size:20px}
+  .bento{gap:12px;grid-auto-rows:150px}
+  .pagehead{padding:0 14px}
+  .crumb{padding:0 14px}
+
+  /* product page */
+  .product{padding:0 14px;gap:16px}
+  .pbrand{font-size:20px}
+  .pprice .now{font-size:22px}
+}
+
+/* search toggle icon — desktop hides it (full search bar shows); mobile reveals it */
+.search-toggle{display:none;background:none;border:0;cursor:pointer;color:var(--ink);
+  padding:8px;border-radius:9px;-webkit-tap-highlight-color:transparent}
+.search-toggle:hover{background:rgba(0,0,0,.05)}
+
+/* mobile: header backdrop-filter creates a containing block that traps the
+   fixed drawer; drop it so the nav drawer escapes to full viewport height */
+@media(max-width:820px){
+  header{backdrop-filter:none;-webkit-backdrop-filter:none;background:#fff}
+}
