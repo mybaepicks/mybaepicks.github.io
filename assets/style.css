@@ -353,3 +353,36 @@ body.nav-open .burger span:nth-child(3){transform:translateY(-7px) rotate(-45deg
 .rail.autorail{scroll-snap-type:none;
   -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%);
   mask-image:linear-gradient(90deg,transparent 0,#000 5%,#000 95%,transparent 100%)}
+
+/* ============================================================
+   DESIGN SYSTEM — artifact-design polish pass
+   Warm-biased neutrals + Bricolage Grotesque / Hanken Grotesk
+   ============================================================ */
+:root{
+  /* neutrals biased warm toward the rose accent (chosen, not default grey) */
+  --bg:#faf6f3; --card:#ffffff; --ink:#1c1a1b; --muted:#7c7270;
+  --line:#ece4e1; --brand:#ff3f6c; --brand-dark:#e01e4f; --star:#f5a623; --ok:#1f9254;
+  --shadow:0 1px 2px rgba(28,26,27,.05),0 10px 30px rgba(28,26,27,.06);
+  --font-display:"Bricolage Grotesque",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --font-body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+}
+body{font-family:var(--font-body);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;
+  letter-spacing:-.005em}
+
+/* display face for all headline-level type */
+.logo,.showcase h1,.showcase .tagline,.secttl h2,.sechead h2,.rail-head h2,
+.pagehead h1,.pbrand,.stat b,.bento .lbl b,.cattile .ct-label span,.mega .promo b{
+  font-family:var(--font-display);letter-spacing:-.02em}
+
+/* tighten hierarchy */
+.logo{letter-spacing:-.04em}
+.showcase h1{letter-spacing:-.045em;font-weight:800}
+.secttl h2,.rail-head h2,.sechead h2{font-weight:700}
+.pagehead h1{font-family:var(--font-display);font-weight:700;letter-spacing:-.03em}
+.pname{font-family:var(--font-body)}
+.eyebrow,.catnav a,.navtop{font-family:var(--font-body)}
+.navtop{font-weight:700}
+/* prices & ratings line up cleanly */
+.price .now,.pprice .now,.stat b,.rating,.off,.pct{font-variant-numeric:tabular-nums}
+/* let headlines wrap gracefully */
+.showcase h1,.secttl h2,.pagehead h1,.pname{text-wrap:balance}
