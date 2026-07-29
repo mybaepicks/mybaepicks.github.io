@@ -1,4 +1,4 @@
-// MyntraChoice shared client JS: product gallery, category sort, header search.
+// MyBae Picks shared client JS: product gallery, category sort, header search.
 
 // ---------- product gallery ----------
 (function gallery(){
@@ -64,7 +64,7 @@
   const inr = n => "₹" + Number(n).toLocaleString("en-IN");
   if(!q){ empty.style.display = "block"; return; }
   title.textContent = `Search: “${q}”`;
-  document.title = `“${q}” · MyntraChoice`;
+  document.title = `“${q}” · MyBae Picks`;
   fetch("/data/search-index.json").then(r=>r.json()).then(data=>{
     const ql = q.toLowerCase();
     const hits = data.filter(p => (p.b + " " + p.n).toLowerCase().includes(ql));

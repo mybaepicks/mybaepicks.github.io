@@ -1,6 +1,6 @@
 :root{
   --bg:#faf7f5;--card:#fff;--ink:#231f20;--muted:#6b6b6b;
-  --brand:#ff3f6c;--brand-dark:#e01e4f;--line:#ececec;--star:#f5a623;--ok:#22883b;
+  --brand:#e11d74;--brand-dark:#b81563;--line:#ececec;--star:#f5a623;--ok:#22883b;
   --shadow:0 1px 3px rgba(0,0,0,.06),0 8px 24px rgba(0,0,0,.05);
   --wrap:1180px;
 }
@@ -468,6 +468,14 @@ body.search-open .search{display:flex}
 
 /* footer signature */
 footer .madeby{margin-top:8px;font-weight:600;color:var(--ink);font-family:var(--font-display)}
+footer .disclaimer{margin-top:10px;max-width:720px;margin-left:auto;margin-right:auto;font-size:11px;opacity:.85;line-height:1.5}
+footer .disclaimer a{color:var(--ink);text-decoration:underline}
+
+/* About / prose page */
+.prose{max-width:760px;margin:8px auto 40px;padding:0 20px;color:var(--ink);line-height:1.7}
+.prose h1{font-family:var(--font-display);font-size:32px;margin:8px 0 18px}
+.prose p{margin:0 0 16px;color:#3a3a3a}
+.prose a{color:var(--ink);text-decoration:underline}
 
 /* desktop: keep the expanded search field adjacent to its icon (no gap) */
 @media(min-width:601px){
