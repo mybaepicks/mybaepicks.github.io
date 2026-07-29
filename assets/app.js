@@ -22,33 +22,85 @@
   });
 })();
 
-// ---------- category sort ----------
+// ---------- category filter + sort (whole-category, via /data/cat/<slug>.json) ----------
 (function sorter(){
-  const sel = document.getElementById("sort");
+  const sortSel  = document.getElementById("sort");
+  const brandSel = document.getElementById("brandFilter");
   const grid = document.getElementById("catgrid");
-  if(!sel || !grid) return;
-  const cards = [...grid.children];
-  const firstNum = (el) => {
-    const m = el && el.textContent.match(/[\d,]+(\.\d+)?/);
-    return m ? parseFloat(m[0].replace(/,/g, "")) : 0;
+  if(!sortSel || !grid) return;
+  const slug = grid.dataset.slug;
+  const serverHTML = grid.innerHTML;                       // original SEO grid
+  const pageNav = document.querySelector(".pagination");
+  const moreWrap = document.getElementById("showmore-wrap");
+  const PAGE = 48;
+  let data = null, view = [], shown = 0;
+
+  const inr = n => "₹" + Number(n).toLocaleString("en-IN");
+  const cardHTML = p => {
+    const off = p.off ? `<div class="off">${p.off}% OFF</div>` : "";
+    const vid = p.vid ? `<span class="vbadge">▶</span>` : "";
+    const mrp = p.mrp > p.price ? `<span class="mrp">${inr(p.mrp)}</span><span class="pct">${p.off}% off</span>` : "";
+    return `<a class="card" href="/p/${p.id}.html">
+      <div class="imgwrap">
+        <img loading="lazy" src="${p.img}" alt="${(p.b+" "+p.n).replace(/"/g,'&quot;')}" onerror="this.style.opacity=.2"/>
+        <div class="rating"><span class="s">★</span>${p.r.toFixed(1)} <span class="n">| ${Number(p.rc).toLocaleString("en-IN")}</span></div>
+        ${off}${vid}
+      </div>
+      <div class="body">
+        <div class="brand">${p.b}</div>
+        <div class="name">${p.n}</div>
+        <div class="price"><span class="now">${inr(p.price)}</span>${mrp}</div>
+      </div>
+    </a>`;
   };
-  const val = c => ({
-    rating: firstNum(c.querySelector(".rating")),   // "★4.8 | 56" -> 4.8
-    now:    firstNum(c.querySelector(".now")),       // "₹1,082" -> 1082
-    off:    firstNum(c.querySelector(".off")),       // "55% OFF" -> 55 (0 if none)
-  });
-  sel.onchange = () => {
-    const s = sel.value;
-    cards.sort((a,b)=>{
-      const A=val(a), B=val(b);
-      if(s==="rating")    return B.rating-A.rating;
-      if(s==="discount")  return B.off-A.off;
-      if(s==="priceLow")  return A.now-B.now;
-      if(s==="priceHigh") return B.now-A.now;
+
+  const isDefault = () => (!brandSel || !brandSel.value) && sortSel.value === "rating";
+
+  const restoreServer = () => {
+    grid.innerHTML = serverHTML;
+    if(pageNav) pageNav.style.display = "";
+    if(moreWrap) moreWrap.innerHTML = "";
+  };
+
+  const renderMore = () => {
+    const next = view.slice(shown, shown + PAGE);
+    grid.insertAdjacentHTML("beforeend", next.map(cardHTML).join(""));
+    shown += next.length;
+    if(moreWrap){
+      moreWrap.innerHTML = shown < view.length
+        ? `<button class="hero-cta" id="showmore">Show more (${view.length - shown} left)</button>` : "";
+      const b = document.getElementById("showmore");
+      if(b) b.onclick = renderMore;
+    }
+  };
+
+  const apply = () => {
+    if(isDefault()){ restoreServer(); return; }
+    const s = sortSel.value, brand = brandSel ? brandSel.value : "";
+    view = data.filter(p => !brand || p.b === brand);
+    view.sort((a,b)=>{
+      if(s==="rating")    return b.r-a.r || b.rc-a.rc;
+      if(s==="mostRated") return b.rc-a.rc;
+      if(s==="discount")  return b.off-a.off;
+      if(s==="priceLow")  return a.price-b.price;
+      if(s==="priceHigh") return b.price-a.price;
       return 0;
     });
-    cards.forEach(c=>grid.appendChild(c));
+    if(pageNav) pageNav.style.display = "none";
+    grid.innerHTML = ""; shown = 0;
+    renderMore();
   };
+
+  const onChange = () => {
+    if(isDefault()){ restoreServer(); return; }
+    if(data){ apply(); return; }
+    grid.style.opacity = ".5";
+    fetch(`/data/cat/${slug}.json`).then(r=>r.json()).then(d=>{ data=d; grid.style.opacity=""; apply(); })
+      .catch(()=>{ grid.style.opacity=""; });
+  };
+
+  sortSel.addEventListener("change", onChange);
+  if(brandSel) brandSel.addEventListener("change", onChange);
 })();
 
 // ---------- search results page (/search.html?q=...) ----------

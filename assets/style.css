@@ -66,7 +66,9 @@ header{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.94);backdro
 .crumb a:hover{color:var(--brand)}
 .pagehead{max-width:var(--wrap);margin:8px auto 18px;padding:0 20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
 .pagehead h1{font-size:24px;margin:0}
-.controls{display:flex;gap:12px;align-items:center}
+.controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+#showmore-wrap{max-width:var(--wrap);margin:0 auto;padding:20px;text-align:center}
+#showmore-wrap .hero-cta{cursor:pointer;border:0}
 .count{color:var(--muted);font-size:13px}
 select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;font-size:13px;cursor:pointer}
 
