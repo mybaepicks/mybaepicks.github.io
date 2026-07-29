@@ -500,7 +500,10 @@ footer .disclaimer a{color:var(--ink);text-decoration:underline}
    mobile = nested accordion (tap gender -> tap group -> items)
    ============================================================ */
 @media(min-width:821px){
-  .mega-inner{flex-wrap:nowrap;overflow-x:auto;padding-bottom:26px;gap:40px}
+  .mega-inner{flex-wrap:nowrap;overflow-x:auto;padding-bottom:26px;gap:40px;
+    /* fade the right edge so overflowing columns hint "there's more" */
+    -webkit-mask-image:linear-gradient(to right,#000 calc(100% - 90px),transparent);
+    mask-image:linear-gradient(to right,#000 calc(100% - 90px),transparent)}
   .mega-inner::-webkit-scrollbar{height:6px}
   .mega-inner::-webkit-scrollbar-thumb{background:#dcdcdc;border-radius:3px}
   .mega-inner::-webkit-scrollbar-track{background:transparent}
