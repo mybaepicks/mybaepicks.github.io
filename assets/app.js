@@ -1,5 +1,21 @@
 // MyBae Picks shared client JS: product gallery, category sort, header search.
 
+// Product URL. Mirrors base_slug() in scripts/generate.py; records whose slug
+// collided with another product's carry an explicit `u` we use instead.
+function pslug(brand, name, u){
+  if(u) return u;
+  const sl = x => x.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  const b = sl(brand), n = sl(name);
+  let s = (n === b || n.startsWith(b + "-")) ? n : (b ? b + "-" + n : n);
+  if(s.length > 70){
+    s = s.slice(0, 70);
+    const i = s.lastIndexOf("-");
+    if(i > 0) s = s.slice(0, i);
+  }
+  return s;
+}
+const purl = p => "/p/" + pslug(p.b, p.n, p.u) + "/";
+
 // ---------- product gallery ----------
 (function gallery(){
   const g = document.querySelector(".gallery");
@@ -40,7 +56,7 @@
     const off = p.off ? `<div class="off">${p.off}% OFF</div>` : "";
     const vid = p.vid ? `<span class="vbadge">▶</span>` : "";
     const mrp = p.mrp > p.price ? `<span class="mrp">${inr(p.mrp)}</span><span class="pct">${p.off}% off</span>` : "";
-    return `<a class="card" href="/p/${p.id}.html">
+    return `<a class="card" href="${purl(p)}">
       <div class="imgwrap">
         <img loading="lazy" src="${p.img}" alt="${(p.b+" "+p.n).replace(/"/g,'&quot;')}" onerror="this.style.opacity=.2"/>
         <div class="rating"><span class="s">★</span>${p.r.toFixed(1)} <span class="n">| ${Number(p.rc).toLocaleString("en-IN")}</span></div>
@@ -117,7 +133,10 @@
   if(!q){ empty.style.display = "block"; return; }
   title.textContent = `Search: “${q}”`;
   document.title = `“${q}” · MyBae Picks`;
-  fetch("/data/search-index.json").then(r=>r.json()).then(data=>{
+  // Reuse app.js's own ?v= token so a rebuilt index isn't shadowed by a cached one.
+  const src = (document.querySelector('script[src*="/assets/app.js"]') || {}).src || "";
+  const ver = src.includes("?v=") ? "?v=" + src.split("?v=")[1] : "";
+  fetch("/data/search-index.json" + ver).then(r=>r.json()).then(data=>{
     const ql = q.toLowerCase();
     const hits = data.filter(p => (p.b + " " + p.n).toLowerCase().includes(ql));
     count.textContent = `${hits.length} result${hits.length !== 1 ? "s" : ""}`;
@@ -126,10 +145,20 @@
       empty.style.display = "block";
       return;
     }
-    grid.innerHTML = hits.slice(0, 240).map(p=>`<a class="card" href="/p/${p.i}.html">
-        <div class="imgwrap"><img loading="lazy" src="${p.img}" onerror="this.style.opacity=.2"/></div>
+    grid.innerHTML = hits.slice(0, 240).map(p=>{
+      // same card as the category grids: rating, discount badge and struck-out MRP
+      const off = p.off ? `<div class="off">${p.off}% OFF</div>` : "";
+      const vid = p.vid ? `<span class="vbadge">▶</span>` : "";
+      const mrp = p.mrp > p.p ? `<span class="mrp">${inr(p.mrp)}</span><span class="pct">${p.off}% off</span>` : "";
+      const rating = p.r ? `<div class="rating"><span class="s">★</span>${p.r.toFixed(1)} <span class="n">| ${Number(p.rc).toLocaleString("en-IN")}</span></div>` : "";
+      return `<a class="card" href="${purl(p)}">
+        <div class="imgwrap">
+          <img loading="lazy" src="${p.img}" alt="${(p.b+" "+p.n).replace(/"/g,'&quot;')}" onerror="this.style.opacity=.2"/>
+          ${rating}${off}${vid}
+        </div>
         <div class="body"><div class="brand">${p.b}</div><div class="name">${p.n}</div>
-        <div class="price"><span class="now">${inr(p.p)}</span></div></div></a>`).join("");
+        <div class="price"><span class="now">${inr(p.p)}</span>${mrp}</div></div></a>`;
+    }).join("");
   }).catch(()=>{ empty.textContent = "Could not load results."; empty.style.display = "block"; });
 })();
 
@@ -168,13 +197,17 @@
     // items are duplicated (set A + set A). Loop distance = width of one set,
     // measured precisely from where the second copy begins so the wrap is seamless.
     const cards = rail.querySelectorAll(".card");
-    const loopWidth = () => cards.length >= 2
+    const measure = () => cards.length >= 2
       ? cards[cards.length / 2].offsetLeft - cards[0].offsetLeft
       : rail.scrollWidth / 2;
+    // Measured up front and on resize, not per frame: reading offsetLeft straight
+    // after writing scrollLeft forces a synchronous layout on every single frame.
+    let w = measure();
+    addEventListener("resize", ()=>{ w = measure(); });
     function tick(){
-      if(!paused){
+      if(w <= 0) w = measure();   // images may not have laid out on first frame
+      if(!paused && w > 0){
         rail.scrollLeft += SPEED;
-        const w = loopWidth();
         // wrap in both directions so drag + auto stay in the infinite range
         if(rail.scrollLeft >= w) rail.scrollLeft -= w;
         else if(rail.scrollLeft < 0) rail.scrollLeft += w;

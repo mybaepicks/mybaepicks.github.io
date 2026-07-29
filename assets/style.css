@@ -128,9 +128,10 @@ footer{border-top:1px solid var(--line);margin-top:50px;padding:24px 20px;text-a
     -webkit-text-fill-color:transparent;color:transparent;animation:shine 6s linear infinite}
   @keyframes shine{to{background-position:220% center}}
 
-  /* page fade-in */
-  body{animation:pagein .5s ease both}
-  @keyframes pagein{from{opacity:0}to{opacity:1}}
+  /* No whole-page fade-in. Animating body opacity from 0 makes the entire site
+     invisible until the animation runs: in a background tab (or any load where
+     animations are frozen) it stays pinned at 0 and never paints at all. The
+     per-section .reveal animations below give the same feel without that risk. */
 
   /* tilt + shine on interactive cards */
   .card,.cattile{transform-style:preserve-3d;transition:transform .18s ease,box-shadow .18s ease}
